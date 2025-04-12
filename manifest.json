@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "FraudGuard",
+  "version": "1.0",
+  "description": "Detects and warns about fraudulent websites.",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
