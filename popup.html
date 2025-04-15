@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>FraudGuard</title>
-    <style>
-      body { font-family: Arial, sans-serif; padding: 10px; }
-    </style>
-  </head>
-  <body>
-    <h2>FraudGuard Extension</h2>
-    <p>This extension checks websites against a fraud list.</p>
-  </body>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 300px;
+      margin: 0;
+      padding: 0;
+    }
+    #status {
+      padding: 20px;
+      text-align: center;
+      font-size: 16px;
+      color: white;
+    }
+    #report {
+      background: #ff4c4c;
+      border: none;
+      padding: 10px;
+      color: white;
+      width: 100%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Checking...</div>
+  <button id="report">Report this site</button>
+  <script src="popup.js"></script>
+</body>
 </html>

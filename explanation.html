@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suspicious Site Warning</title>
+  <link rel="stylesheet" href="explanation.css">
+</head>
+<body>
+  <div class="top-right">FRAUD GUARD</div>
+
+  <div class="container">
+    <img class="warning-img" src="images/564619.png" alt="Warning" />
+
+    <h1>This site seems suspicious</h1>
+    <p><strong>You tried to visit:</strong> <span id="suspiciousUrl"></span></p>
+    <p><strong>Reason:</strong> <span id="reason"></span></p>
+    <!--the following line is for the timer--> 
+    <!-- <div id="countdown">Redirecting in 7 seconds...</div> -->
+
+    <div class="button-group">
+      <button class="button" id="goBack">Go Back to Safety</button>
+      <button class="button secondary" id="report">Report This Site</button>
+    </div>
+
+    <p id="reportStatus"></p>
+  </div>
+
+  <script src="explanation.js"></script>
+</body>
+</html>
