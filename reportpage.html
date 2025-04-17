@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Fraudulent Site</title>
+  <link rel="stylesheet" href="reportpage.css">
+</head>
+<body>
+  <div class="top-right">FRAUD GUARD</div>
+  <div class="report-container">
+    <h1>Report a Suspicious Website</h1>
+    <h3>Step 1: Website Being Reported</h3>
+    <div id="urlWrapper" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; max-width: 600px; margin-bottom: 12px; padding: 10px; border: 2px solid #007BFF; border-radius: 8px; background-color: #E9F5FF;">
+      <strong>You are reporting:</strong>
+      <span id="reportedUrl" style="font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 150px;">[Reported URL]</span>
+    </div>
+    <h3>Step 2: Describe Incident</h3>    
+    
+    <textarea id="description" placeholder="What happened? Be specific." rows="6"></textarea>
+
+    <h3>STEP 3: Select relevant tags (you can choose multiple):</h3>
+    <div id="tags"></div>
+
+    <button id="submitReport">Submit Report</button>
+    <p id="reportStatus"></p>
+  </div>
+  <script src="reportpage.js"></script>
+</body>

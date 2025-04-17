@@ -1,0 +1,125 @@
+/* reportpage.css */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  background-image: url('images/rback.jpg');
+}
+
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #d32f2f;
+  font-family: sans-serif;
+}
+
+.report-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #f2e6da;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+textarea {
+  width: 100%;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  padding: 0.5rem 1rem;
+  background: #eee;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tag.selected {
+  background: #cc0000;
+  color: white;
+}
+
+button {
+  padding: 10px 20px;
+  background: #cc0000;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.top-right-icon {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  width: 40px;
+}
+
+#description {
+  width: 90%;
+  max-width: 600px;
+  height: 150px;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+  background-color: #9bd5f7;
+  resize: vertical;
+}
+
+#reportForm {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 700px;
+  margin: auto;
+}
+
+#logo {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+.button-row {
+  text-align: center;
+  margin-top: 30px;
+}
+
+button#submitReport {
+  background-color: #fb3535;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+button#submitReport:hover {
+  background-color: #43a047;
+}

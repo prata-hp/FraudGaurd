@@ -47,12 +47,19 @@ document.getElementById('goBack').addEventListener('click', () => {
   });
   
 
-// Handle the "Report This Site" button click
+// // Handle the "Report This Site" button click
+// document.getElementById('report').addEventListener('click', () => {
+//   // Here, you can implement a mechanism to report the site (e.g., sending it to a server)
+//   let reportStatus = document.getElementById('reportStatus');
+//   reportStatus.textContent = 'This site has been reported.';
+//   reportStatus.style.color = 'green';
+//   // Optionally, log it or send to a backend for tracking
+//   console.log(`Reported: ${suspiciousUrl}`);
+// });
+
 document.getElementById('report').addEventListener('click', () => {
-  // Here, you can implement a mechanism to report the site (e.g., sending it to a server)
-  let reportStatus = document.getElementById('reportStatus');
-  reportStatus.textContent = 'This site has been reported.';
-  reportStatus.style.color = 'green';
-  // Optionally, log it or send to a backend for tracking
-  console.log(`Reported: ${suspiciousUrl}`);
+  const reportUrl = chrome.runtime.getURL(
+    `reportpage.html?url=${encodeURIComponent(suspiciousUrl)}`
+  );
+  window.location.href = reportUrl;
 });
