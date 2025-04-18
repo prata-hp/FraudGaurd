@@ -1,42 +1,46 @@
 const suspiciousPatterns = [
   { pattern: /@/, reason: "URL contains '@' symbol." },
-  {
-    pattern: /\d+\.\d+\.\d+\.\d+/,
-    reason: "IP address used instead of domain.",
-  },
-  {
-    pattern: /https?:\/\/(.*)\.(xyz|tk|ml)/,
-    reason: "Suspicious top-level domain (.xyz, .tk, .ml).",
-  },
+  { pattern: /\d+\.\d+\.\d+\.\d+/, reason: "IP address used instead of domain." },
+  { pattern: /https?:\/\/(.*)\.(xyz|tk|ml)/, reason: "Suspicious TLD (.xyz, .tk, .ml)." },
   { pattern: /.{75,}/, reason: "Unusually long URL." },
-  {
-    pattern: /(login|secure|bank|verify).*\.(com|net)/,
-    reason: "Fake login-related keywords in domain.",
-  },
+  { pattern: /(login|secure|bank|verify).*\.(com|net)/, reason: "Login-related keywords in domain." },
 ];
 
 const url = window.location.href;
 let matchedReason = "";
 
+// Check if URL matches suspicious patterns
 suspiciousPatterns.forEach((entry) => {
   if (entry.pattern.test(url)) {
     matchedReason = entry.reason;
   }
 });
 
+// Ask background for phishing list and check against it
 chrome.runtime.sendMessage({ type: "getPhishingList" }, (response) => {
-  const isPhishingURL = response.phishingList.some((phishUrl) =>
-    url.includes(phishUrl)
-  );
+  const isPhishingURL = response.phishingList.some((phishUrl) => url.includes(phishUrl));
+  
   if (matchedReason || isPhishingURL) {
-    const reason = isPhishingURL
-      ? "Listed in phishing database."
-      : matchedReason;
-    chrome.runtime.sendMessage({ fraudDetected: true, reason });
+    const reason = isPhishingURL ? "Listed in phishing database." : matchedReason;
+
+    // Save fraud status to local storage
+    chrome.storage.local.set({
+      fraudStatus: {
+        url: url,
+        reason: reason,
+        timestamp: Date.now()
+      }
+    });
+
+    // Notify background and (maybe) popup
+    chrome.runtime.sendMessage({ fraudDetected: true, reason: reason });
+
+    // Show warning banner on current page
     showRedWarning(reason);
   }
 });
 
+// Show the fraud warning banner
 function showRedWarning(reason) {
   const style = document.createElement("style");
   style.textContent = `
@@ -44,7 +48,7 @@ function showRedWarning(reason) {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
+      width: 97%;
       background: linear-gradient(90deg, #8e0000, #cc0000);
       color: white;
       padding: 1rem 2rem;
@@ -82,7 +86,6 @@ function showRedWarning(reason) {
   banner.innerHTML = `
     <div>
       ⚠️ <strong>Warning:</strong> This site may be fraudulent<br>
-       
     </div>
     <div>
       <button id="continueBtn">Continue</button>
@@ -95,9 +98,7 @@ function showRedWarning(reason) {
 
   document.getElementById("learnBtn").onclick = () => {
     const redirectUrl = chrome.runtime.getURL(
-      `explanation.html?reason=${encodeURIComponent(
-        reason
-      )}&url=${encodeURIComponent(url)}`
+      `explanation.html?reason=${encodeURIComponent(reason)}&url=${encodeURIComponent(url)}`
     );
     window.location.href = redirectUrl;
   };

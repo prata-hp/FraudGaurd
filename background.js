@@ -1,6 +1,6 @@
 let phishingURLs = [];
 
-// Load phishing URLs from CSV into memory
+// Load phishing URLs from CSV into memory on startup
 fetch(chrome.runtime.getURL("data/phishing-urls.csv"))
   .then((response) => response.text())
   .then((data) => {
@@ -11,25 +11,41 @@ fetch(chrome.runtime.getURL("data/phishing-urls.csv"))
     });
   });
 
+// Listen for incoming messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Return the phishing URL list
+  // Return the list of phishing URLs
   if (message.type === "getPhishingList") {
     sendResponse({ phishingList: phishingURLs });
   }
 
-  // Log detected fraud
+  // When fraud is detected
   else if (message.fraudDetected) {
-    console.log("⚠️ Fraud detected on tab:", sender.tab?.url);
-    console.log("Reason:", message.reason);
+    const detectedUrl = sender.tab?.url || "unknown";
+
+    // Save fraud status in local storage
+    chrome.storage.local.set({
+      fraudStatus: {
+        url: detectedUrl,
+        reason: message.reason || "Unknown reason"
+      }
+    });
+
+    // Optional: send message to other parts if needed
+    // Note: popup.js might not be open, but this is harmless
+    chrome.runtime.sendMessage({
+      fraudDetected: true,
+      reason: message.reason,
+      url: detectedUrl
+    });
+
+    console.warn("🚨 Fraud detected on:", detectedUrl);
+    console.warn("Reason:", message.reason);
   }
 
-  // Handle "Go Back to Safety"
+  // Redirect user to a safe tab
   else if (message.action === "goHome" && sender.tab?.id) {
     chrome.tabs.create({ url: "chrome://newtab" }, () => {
       chrome.tabs.remove(sender.tab.id);
     });
   }
-
-  
 });
-

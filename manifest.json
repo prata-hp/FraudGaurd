@@ -1,7 +1,7 @@
-{
+ {
   "manifest_version": 3,
   "name": "FraudGuard",
-  "version": "1.32",
+  "version": "1.5",
   "description": "Detects and warns about fraudulent websites.",
   "permissions": ["tabs", "downloads", "storage", "scripting"],
   "host_permissions": ["<all_urls>"],
@@ -12,12 +12,12 @@
     "default_popup": "popup.html"    
   },
   "icons": {
-  "16": "images/icon.png",
-  "32": "images/icon.png",
-  "48": "images/icon.png",
-  "128": "images/icon.png"
-}
-,"options_page": "options.html",
+    "16": "images/icon.png",
+    "32": "images/icon.png",
+    "48": "images/icon.png",
+    "128": "images/icon.png"
+  },
+  "options_page": "options.html",
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
@@ -30,8 +30,13 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["explanation.html", "reportpage.html"],
+      "resources": [
+        "explanation.html",
+        "reportpage.html",
+        "images/popup-background.jpg"
+      ],
       "matches": ["<all_urls>"]
     }
   ]
 }
+

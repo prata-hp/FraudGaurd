@@ -1,32 +1,32 @@
-<!DOCTYPE html>
-<html>
+ <!DOCTYPE html>
+<html lang="en">
 <head>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      width: 300px;
-      margin: 0;
-      padding: 0;
-    }
-    #status {
-      padding: 20px;
-      text-align: center;
-      font-size: 16px;
-      color: white;
-    }
-    #report {
-      background: #ff4c4c;
-      border: none;
-      padding: 10px;
-      color: white;
-      width: 100%;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fraud Guard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="status">Checking...</div>
-  <button id="report">Report this site</button>
+  <div class="header">
+    <img src="images/notification-icon.svg" alt="Notifications" class="icon" id="notification-icon">
+    <img src="images/settings-icon.svg" alt="Settings" class="icon" id="settings-icon">
+  </div>
+
+  <div class="logo-container">
+    <img src="images/icon.png" alt="Fraud Guard Logo" id="logo">
+  </div>
+
+  <div class="status-indicator" id="status-indicator">
+    <span id="status-dot" class="dot"></span>
+    <span id="status-text">Checking...</span>
+  </div>
+
+  <div class="tagline">
+    We're helping keep you safe online
+  </div>
+
+  <button id="report-btn">Report</button>
+
   <script src="popup.js"></script>
 </body>
 </html>
