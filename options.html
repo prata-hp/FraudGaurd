@@ -1,39 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Extension Settings</title>
-  <link rel="stylesheet" href="options.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FraudGuard Settings</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #fff;
+    }
+
+    .top-right {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #e53935;
+      font-family: sans-serif;
+      z-index: 9999;
+      text-transform: uppercase;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+      flex-direction: row;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: #1c1c1e;
+      padding: 1.5rem 1rem;
+      border-right: 1px solid #333;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 1.5rem;
+      color: #ddd;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      margin: 1.2rem 0;
+      cursor: pointer;
+      color: #bbb;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .sidebar li:hover {
+      color: #fff;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section h3 {
+      font-size: 18px;
+      margin-bottom: 1rem;
+      color: #e53935;
+      text-transform: uppercase;
+    }
+
+    .setting {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #2c2c2e;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .setting:hover {
+      background-color: #333;
+    }
+
+    .setting span {
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    .toggle {
+      position: relative;
+      width: 42px;
+      height: 22px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #888;
+      transition: 0.4s;
+      border-radius: 20px;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    .toggle input:checked + .slider {
+      background-color: #e53935;
+    }
+
+    .toggle input:checked + .slider::before {
+      transform: translateX(20px);
+    }
+
+    .save-button {
+      display: block;
+      margin: 30px auto 0 auto;
+      padding: 12px 28px;
+      background-color: #e53935;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .save-button:hover {
+      background-color: #c62828;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 1rem;
+      }
+
+      .main {
+        padding: 1.5rem;
+      }
+
+      .sidebar h2 {
+        font-size: 16px;
+      }
+
+      .sidebar li {
+        font-size: 13px;
+      }
+
+      .section h3 {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <h1>Extension Settings</h1>
+  <div class="top-right">FRAUD GUARD</div>
 
-  <div class="setting">
-    <label>
-      <input type="checkbox" id="enableAlerts">
-      Enable Warnings
-    </label>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>FraudGuard</h2>
+      <ul>
+        <li>Dashboard</li>
+        <li>Detection Rules</li>
+        <li>Alerts</li>
+        <li>Settings</li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div>
+        <div class="section">
+          <h3>Suspicious Pattern Detection</h3>
+
+          <div class="setting">
+            <span>Detect "@" in URL</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Detect IP address in URL</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Detect suspicious TLDs (.xyz, .tk, .ml)</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Detect long URLs</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Detect fake login domains</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Additional Protection</h3>
+
+          <div class="setting">
+            <span>Enable real-time scanning</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Notify when site is blocked</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Auto-update phishing list</span>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <span>Report false positives</span>
+            <label class="toggle">
+              <input type="checkbox" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="save-button" onclick="alert('Settings saved!')">Save Changes</button>
+    </main>
   </div>
-
-  <div class="setting">
-    <label for="themeSelect">Theme:</label>
-    <select id="themeSelect">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-  </div>
-
-  <div class="setting">
-    <label>
-      Default Report Signature: 
-      <input type="text" id="signature" placeholder="(Optional)">
-    </label>
-  </div>
-
-  <button id="saveButton">Save Settings</button>
-  <p id="status"></p>
-
-  <script src="options.js"></script>
 </body>
 </html>
