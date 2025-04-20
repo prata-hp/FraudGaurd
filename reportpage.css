@@ -4,6 +4,12 @@ body {
   padding: 2rem;
   background-color: #f9f9f9;
   background-image: url('images/rback.jpg');
+  background-size: cover;
+  min-height: 100vh; /* This line ensures full screen */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .top-right {
@@ -17,13 +23,14 @@ body {
 }
 
 .report-container {
-  max-width: 600px;
-  margin: 0 auto;
-  background: #f2e6da;
-  padding: 2rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  max-width: 700px;
+  margin: 40px auto 60px auto; /* Notice extra margin at bottom */
 }
+
 
 textarea {
   width: 100%;
@@ -47,7 +54,7 @@ textarea {
   border-radius: 20px;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.1);
 }
 
 .tag.selected {
@@ -123,3 +130,91 @@ button#submitReport {
 button#submitReport:hover {
   background-color: #43a047;
 }
+
+.footer {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 20px 30px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #333;
+  width: 100%;
+  margin-top: 40px;
+  animation: fadeInFooter 1s ease forwards;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 15px;
+}
+
+.footer-left p {
+  margin: 0;
+}
+
+.footer-right ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-right a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+}
+
+.footer-right a:hover {
+  text-decoration: underline;
+}
+
+.contact-info {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #666;
+}
+
+.contact-info a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+/* Smooth fade animation */
+@keyframes fadeInFooter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Footer */
+@media (max-width: 600px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-right ul {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+}
+
