@@ -1,3 +1,5 @@
+console.log("✅ Script loaded: content.js");
+
 const suspiciousPatterns = [
   { pattern: /@/, reason: "URL contains '@' symbol." },
   { pattern: /\d+\.\d+\.\d+\.\d+/, reason: "IP address used instead of domain." },
@@ -9,38 +11,49 @@ const suspiciousPatterns = [
 const url = window.location.href;
 let matchedReason = "";
 
-// Check if URL matches suspicious patterns
+// 1. Check URL against regex patterns
 suspiciousPatterns.forEach((entry) => {
   if (entry.pattern.test(url)) {
     matchedReason = entry.reason;
   }
 });
 
-// Ask background for phishing list and check against it
+// 2. Ask background to check via Google Safe Browsing API
+chrome.runtime.sendMessage({ type: "check_url", url: url });
+
+// 3. Also check phishing list from local CSV (if implemented)
 chrome.runtime.sendMessage({ type: "getPhishingList" }, (response) => {
-  const isPhishingURL = response.phishingList.some((phishUrl) => url.includes(phishUrl));
-  
-  if (matchedReason || isPhishingURL) {
+  const isPhishingURL = response?.phishingList?.some((phishUrl) => url.includes(phishUrl));
+
+  if (isPhishingURL || matchedReason) {
     const reason = isPhishingURL ? "Listed in phishing database." : matchedReason;
 
-    // Save fraud status to local storage
-    chrome.storage.local.set({
-      fraudStatus: {
-        url: url,
-        reason: reason,
-        timestamp: Date.now()
-      }
-    });
-
-    // Notify background and (maybe) popup
-    chrome.runtime.sendMessage({ fraudDetected: true, reason: reason });
-
-    // Show warning banner on current page
-    showRedWarning(reason);
+    saveFraudStatusAndShow(reason);
   }
 });
 
-// Show the fraud warning banner
+// 4. Receive Google API result and show banner if needed
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === "show_warning" && msg.reason) {
+    saveFraudStatusAndShow(msg.reason);
+  }
+});
+
+// 5. Save to localStorage and show banner
+function saveFraudStatusAndShow(reason) {
+  chrome.storage.local.set({
+    fraudStatus: {
+      url: url,
+      reason: reason,
+      timestamp: Date.now()
+    }
+  });
+
+  chrome.runtime.sendMessage({ fraudDetected: true, reason: reason });
+  showRedWarning(reason);
+}
+
+// 6. Show banner
 function showRedWarning(reason) {
   const style = document.createElement("style");
   style.textContent = `
@@ -86,6 +99,7 @@ function showRedWarning(reason) {
   banner.innerHTML = `
     <div>
       ⚠️ <strong>Warning:</strong> This site may be fraudulent<br>
+      <small>Reason: ${reason}</small>
     </div>
     <div>
       <button id="continueBtn">Continue</button>
@@ -105,5 +119,5 @@ function showRedWarning(reason) {
 
   setTimeout(() => {
     if (document.body.contains(banner)) banner.remove();
-  }, 10000);
+  }, 20000);
 }
