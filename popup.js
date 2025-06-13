@@ -1,4 +1,6 @@
- // Logo click – redirect
+console.log("✅ Script loaded: popup.js");
+
+// Logo click – redirect
 // Open external FraudGuard site when logo is clicked
 document.getElementById("logo").addEventListener("click", () => {
   window.open("options.html", "_blank");
