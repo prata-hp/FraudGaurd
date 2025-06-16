@@ -1,15 +1,24 @@
- {
+{
   "manifest_version": 3,
   "name": "FraudGuard",
-  "version": "1.5",
+  "version": "3.0",
   "description": "Detects and warns about fraudulent websites.",
-  "permissions": ["tabs", "downloads", "storage", "scripting"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "tabs",
+    "downloads",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:3000/",
+    "https://fraudguard-backend.onrender.com/"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html"    
+    "default_popup": "popup.html"
   },
   "icons": {
     "16": "images/icon.png",

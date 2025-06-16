@@ -65,3 +65,16 @@ chrome.runtime.onMessage.addListener((message) => {
     statusText.style.color = "green";
   }
 });
+
+// backend
+// popup.js
+fetch('https://fraudguard-backend.onrender.com/api/test')
+  .then(res => res.json())
+  .then(data => {
+    console.log('Response from backend:', data);
+    document.getElementById('output').textContent = data.message;
+  })
+  .catch(err => {
+    console.error('Error calling backend:', err);
+    document.getElementById('output').textContent = 'Error connecting to backend';
+  });
