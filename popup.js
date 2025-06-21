@@ -3,7 +3,7 @@ console.log("✅ Script loaded: popup.js");
 // Logo click – redirect
 // Open external FraudGuard site when logo is clicked
 document.getElementById("logo").addEventListener("click", () => {
-  window.open("options.html", "_blank");
+  window.open("https://fascinating-kitten-59ddf1.netlify.app/", "_blank");
 });
 
 // Open report page with current URL
