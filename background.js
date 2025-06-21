@@ -1,10 +1,50 @@
 let phishingURLs = [];
-const API_KEY = "A"; // Google Safe Browsing API key
-const BACKEND_URL = "https://fraudguard-backend.onrender.com/api/report";
-
+const API_KEY = "AIzaSyBzDNAC22xagUlp236sJgfpbEdXZaLhtgU";
 console.log("✅ Script loaded: background.js");
 
-// 1. To Load phishing URLs from CSV on extension startup
+// 0. Custom ML backend phishing detection
+async function checkURLWithAPI(tabUrl, tabId) {
+  try {
+    const response = await fetch("http://localhost:5000/api/report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: tabUrl }),
+    });
+
+    if (!response.ok) {
+      console.error("⚠️ Backend error:", response.statusText);
+      return;
+    }
+
+    const result = await response.json();
+    console.log("🤖 ML model prediction:", result);
+
+    if (result.prediction === "phishing") {
+      // Show warning via content.js
+      chrome.tabs.sendMessage(tabId, {
+        type: "show_warning",
+        reason: "AI-flagged phishing",
+      });
+
+      // Log locally
+      chrome.storage.local.set({
+        fraudStatus: {
+          url: tabUrl,
+          reason: "AI-flagged phishing",
+          timestamp: Date.now(),
+        },
+      });
+
+      console.warn("🚨 AI model flagged phishing:", tabUrl);
+    }
+  } catch (err) {
+    console.error("🛑 ML backend request failed:", err);
+  }
+}
+
+// 1. Load phishing URLs from CSV on extension startup
 fetch(chrome.runtime.getURL("data/phishing-urls.csv"))
   .then((response) => response.text())
   .then((data) => {
@@ -22,63 +62,74 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ phishingList: phishingURLs });
   }
 
-  // 2B: Check via Google Safe Browsing API
+  // 2B: Handle real-time fraud detection using Google Safe Browsing API
   else if (message.type === "check_url" && message.url) {
     const urlToCheck = message.url;
 
-    fetch(`https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${API_KEY}`, {
-      method: "POST",
-      body: JSON.stringify({
-        client: {
-          clientId: "fraudguard-extension",
-          clientVersion: "1.0"
+    // 🔍 Google Safe Browsing API
+    fetch(
+      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${API_KEY}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          client: {
+            clientId: "fraudguard-extension",
+            clientVersion: "1.0",
+          },
+          threatInfo: {
+            threatTypes: [
+              "MALWARE",
+              "SOCIAL_ENGINEERING",
+              "UNWANTED_SOFTWARE",
+              "POTENTIALLY_HARMFUL_APPLICATION",
+            ],
+            platformTypes: ["ANY_PLATFORM"],
+            threatEntryTypes: ["URL"],
+            threatEntries: [{ url: urlToCheck }],
+          },
+        }),
+        headers: {
+          "Content-Type": "application/json",
         },
-        threatInfo: {
-          threatTypes: [
-            "MALWARE",
-            "SOCIAL_ENGINEERING",
-            "UNWANTED_SOFTWARE",
-            "POTENTIALLY_HARMFUL_APPLICATION"
-          ],
-          platformTypes: ["ANY_PLATFORM"],
-          threatEntryTypes: ["URL"],
-          threatEntries: [{ url: urlToCheck }]
-        }
-      }),
-      headers: {
-        "Content-Type": "application/json"
       }
-    })
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data && data.matches && data.matches.length > 0) {
           const reason = data.matches[0].threatType || "Suspicious link";
 
-          // Show warning
           chrome.tabs.sendMessage(sender.tab.id, {
             type: "show_warning",
-            reason: reason
+            reason: reason,
           });
 
-          // Save to local
           chrome.storage.local.set({
             fraudStatus: {
               url: urlToCheck,
               reason: reason,
-              timestamp: Date.now()
-            }
+              timestamp: Date.now(),
+            },
           });
 
-          console.warn("🚨 Google flagged URL:", urlToCheck, "| Reason:", reason);
-
-          // ✅ Send to backend
-          postToBackend(urlToCheck, reason);
+          console.warn(
+            "🚨 Google flagged URL:",
+            urlToCheck,
+            "| Reason:",
+            reason
+          );
+        } else {
+          // 🔁 If Google did NOT flag it, call your ML backend
+          checkURLWithAPI(urlToCheck, sender.tab.id);
         }
       })
-      .catch((error) => console.error("🛑 Google API error:", error));
+      .catch((error) => {
+        console.error("🛑 Google Safe Browsing API error:", error);
+        // 🔁 Still call ML backend on API failure
+        checkURLWithAPI(urlToCheck, sender.tab.id);
+      });
   }
 
-  // 2C: Handle Regex/CSV matches from content.js
+  // 2C: Log fraud if sent by content.js
   else if (message.fraudDetected) {
     const detectedUrl = sender.tab?.url || "unknown";
 
@@ -86,53 +137,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       fraudStatus: {
         url: detectedUrl,
         reason: message.reason || "Unknown reason",
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+      },
     });
 
     chrome.runtime.sendMessage({
       fraudDetected: true,
       reason: message.reason,
-      url: detectedUrl
+      url: detectedUrl,
     });
 
     console.warn("🚨 Regex/CSV Fraud detected on:", detectedUrl);
     console.warn("Reason:", message.reason);
-
-    // ✅ Send to backend
-    postToBackend(detectedUrl, message.reason);
   }
 
-  // 2D: Close tab if user clicks "Go Home"
+  // 2D: Optionally close tab or redirect to newtab
   else if (message.action === "goHome" && sender.tab?.id) {
     chrome.tabs.create({ url: "chrome://newtab" }, () => {
       chrome.tabs.remove(sender.tab.id);
     });
   }
 });
-
-// 3. Ping backend on tab load (optional)
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && /^https?:/.test(tab.url)) {
-    fetch("https://fraudguard-backend.onrender.com/api/test")
-      .then((res) => res.json())
-      .then((data) => console.log("🛰️ Backend says:", data.message))
-      .catch((err) => console.error("❌ Backend ping error:", err));
-  }
-});
-
-// 🔁 Backend submission logic
-function postToBackend(url, reason) {
-  fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      url: url,
-      reason: reason,
-      timestamp: Date.now()
-    })
-  })
-    .then((res) => res.json())
-    .then((data) => console.log("✅ Sent to Firebase via backend:", data))
-    .catch((err) => console.error("❌ Failed to POST to backend:", err));
-}
