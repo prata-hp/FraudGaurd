@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "FraudGuard",
-  "version": "3.0",
+  "version": "3.5",
   "description": "Detects and warns about fraudulent websites.",
   "permissions": [
     "tabs",

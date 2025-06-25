@@ -2,6 +2,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const suspiciousUrl = urlParams.get("url");
 document.getElementById("reportedUrl").textContent = suspiciousUrl;
 
+// Predefined tags
 const tagList = [
   "Phishing", "Banking Fraud", "Fake Login", "Suspicious Redirect",
   "Fake Offers", "Lottery Scam", "Impersonation", "Fake Payment Gateway",
@@ -16,6 +17,7 @@ const tagList = [
   "Dropper Host", "Credential Phishing", "Zero-day Exploit"
 ];
 
+// Render tags
 const tagContainer = document.getElementById("tags");
 tagList.forEach(tag => {
   const tagEl = document.createElement("div");
@@ -25,8 +27,37 @@ tagList.forEach(tag => {
   tagContainer.appendChild(tagEl);
 });
 
+// Create and attach the custom tag input and add button
+const customTagInput = document.createElement("input");
+customTagInput.id = "customTagInput";
+customTagInput.placeholder = "Add custom tag";
+customTagInput.style.marginTop = "10px";
+customTagInput.style.padding = "6px";
+customTagInput.style.borderRadius = "5px";
+customTagInput.style.border = "1px solid #aaa";
+customTagInput.style.width = "200px";
+
+const addTagBtn = document.createElement("button");
+addTagBtn.textContent = "➕";
+addTagBtn.style.marginLeft = "8px";
+addTagBtn.style.padding = "6px 12px";
+addTagBtn.onclick = () => {
+  const value = customTagInput.value.trim();
+  if (value) {
+    const tagEl = document.createElement("div");
+    tagEl.textContent = value;
+    tagEl.className = "tag selected";
+    tagEl.onclick = () => tagEl.classList.toggle("selected");
+    tagContainer.appendChild(tagEl);
+    customTagInput.value = "";
+  }
+};
+tagContainer.appendChild(customTagInput);
+tagContainer.appendChild(addTagBtn);
+
+// Submit Report
 document.getElementById("submitReport").addEventListener("click", () => {
-  const description = document.getElementById("description").value;
+  const description = document.getElementById("description").value.trim();
   const selectedTags = Array.from(document.querySelectorAll(".tag.selected"))
     .map(el => el.textContent);
 
@@ -34,14 +65,19 @@ document.getElementById("submitReport").addEventListener("click", () => {
     return alert("Please fill in a description and select at least one tag.");
   }
 
+  // 1. Send to background to save in backend
+  chrome.runtime.sendMessage({
+    type: "manualReport",
+    url: suspiciousUrl,
+    tags: selectedTags,
+    description: description
+  });
+
+  // 2. Also save as CSV in local report (optional)
   const reportData = `${suspiciousUrl},${selectedTags.join("|")},"${description.replace(/\"/g, "'")}"\n`;
-
-
-
-  // Send to background to store in report.csv
   chrome.runtime.sendMessage({ type: "saveReport", row: reportData });
 
-  // Show confirmation message
+  // 3. Show confirmation toast
   const toast = document.createElement("div");
   toast.innerText = "✅ Report submitted successfully.";
   toast.style.position = "fixed";
@@ -59,15 +95,13 @@ document.getElementById("submitReport").addEventListener("click", () => {
   toast.style.transition = "opacity 0.5s ease, transform 0.5s ease";
   toast.style.opacity = "0";
   toast.style.transform = "translateX(-50%) scale(0.95)";
-  
-  // Add to document and animate in
   document.body.appendChild(toast);
+
   setTimeout(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(-50%) scale(1)";
   }, 50);
-  
-  // Fade out and redirect after 3s
+
   setTimeout(() => {
     toast.style.opacity = "0";
     toast.style.transform = "translateX(-50%) scale(0.95)";
@@ -76,6 +110,4 @@ document.getElementById("submitReport").addEventListener("click", () => {
       chrome.runtime.sendMessage({ action: "goHome" });
     }, 500);
   }, 3000);
-  
-
 });
