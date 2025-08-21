@@ -5,7 +5,7 @@ const suspiciousPatterns = [
   { pattern: /\d+\.\d+\.\d+\.\d+/, reason: "IP address used instead of domain." },
   { pattern: /https?:\/\/(.*)\.(xyz|tk|ml)/, reason: "Suspicious TLD (.xyz, .tk, .ml)." },
   { pattern: /.{999,}/, reason: "Unusually long URL." },
-  { pattern: /(login|secure|bank|verify).*\.(com|net)/, reason: "Login-related keywords in domain." },
+  { pattern: /(longin|secure|bank|verify).*\.(com|net)/, reason: "Login-related keywords in domain." },
 ];
 
 const url = window.location.href;
